@@ -1,0 +1,127 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-insert-roles
+      author: Timur Aslitdinov
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: name
+                  value: ROLE_ADMIN
+
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: name
+                  value: ROLE_USER
+
+  - changeSet:
+      id: 006-insert-admin
+      author: Timur Aslitdinov
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: username
+                  value: admin
+              - column:
+                  name: password
+                  value: "$2a$12$THE0A21zbkNny0l8VvGMYew261QDMHBVKW3/gtcMs.TjwqTiZUc7m"
+              - column:
+                  name: email
+                  value: admin@example.com
+
+        - insert:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  valueNumeric: 1
+              - column:
+                  name: role_id
+                  valueNumeric: 1
+
+  - changeSet:
+      id: 006-insert-user
+      author: Timur Aslitdinov
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: username
+                  value: user
+              - column:
+                  name: password
+                  value: "$2a$12$XYsqnvuyZIxEsFxdyO.6cOfe/yarpYuE1/blZ1EDeuiWeeaHYvmwe"
+              - column:
+                  name: email
+                  value: user@example.com
+
+        - insert:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  valueNumeric: 2
+              - column:
+                  name: role_id
+                  valueNumeric: 2
+
+  - changeSet:
+      id: 006-insert-test-cards
+      author: Timur Aslitdinov
+      changes:
+        # Карта админа (активная, хороший баланс)
+        - insert:
+            tableName: cards
+            columns:
+              - column: { name: encrypted_number, value: "qwh61LPfVAf1D+ERe/VduJYbJ5PbJDUSgT8NILOi/dw=" }
+              - column: { name: pan_last4, value: "9458" }
+              - column: { name: owner_id, valueNumeric: 1 }
+              - column: { name: expiry, valueDate: "2028-12-31" }
+              - column: { name: status, value: "ACTIVE" }
+              - column: { name: balance, valueNumeric: 150000.00 }
+              - column: { name: currency, value: "USD" }
+              - column: { name: aes_key, value: "Mv0Wm9L9M7FqQRdV/dF9VTmDwA82rDmJ6dpauXI1Puk=" }
+
+        # Карта обычного юзера (активная, средний баланс)
+        - insert:
+            tableName: cards
+            columns:
+              - column: { name: encrypted_number, value: "Z5bqAhb7OVJUAMyhTJDLeb2v8BhChEy+adJDPMbiN3M=" }
+              - column: { name: pan_last4, value: "1699" }
+              - column: { name: owner_id, valueNumeric: 2 }
+              - column: { name: expiry, valueDate: "2027-06-30" }
+              - column: { name: status, value: "ACTIVE" }
+              - column: { name: balance, valueNumeric: 45750.75 }
+              - column: { name: currency, value: "USD" }
+              - column: { name: aes_key, value: "qHn3qAydez1cscTZBLl49ZtX90WMUBClfxOT3m99HGU=" }
+
+        # Ещё одна карта юзера (заблокированная, маленький баланс)
+        - insert:
+            tableName: cards
+            columns:
+              - column: { name: encrypted_number, value: "JlBdFrwWBY8R6SsQ5gZEacgxqYZTe8SkSiQAc6vAd0Q=" }
+              - column: { name: pan_last4, value: "6937" }
+              - column: { name: owner_id, valueNumeric: 2 }
+              - column: { name: expiry, valueDate: "2026-11-15" }
+              - column: { name: status, value: "BLOCKED" }
+              - column: { name: balance, valueNumeric: 120.00 }
+              - column: { name: currency, value: "USD" }
+              - column: { name: aes_key, value: "Fh7gS/w9xsmtT/ZfRAItT4AgxRq1/xC4pLie1be5yP0=" }

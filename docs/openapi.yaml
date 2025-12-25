@@ -1,0 +1,877 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Bank REST API",
+    "description": "Это API предоставляет эндпоинты для управления банковскими картами.",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Generated server url"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "User Cards",
+      "description": "Работа с картами пользователя"
+    },
+    {
+      "name": "Admin Users",
+      "description": "Управление пользователями администратором"
+    },
+    {
+      "name": "Transactions",
+      "description": "Операции по транзакциям пользователя"
+    },
+    {
+      "name": "Authentication",
+      "description": "Авторизация пользователей"
+    },
+    {
+      "name": "Admin Cards",
+      "description": "Управление банковскими картами администратором"
+    }
+  ],
+  "paths": {
+    "/api/admin/users/{userId}/roles/update": {
+      "put": {
+        "tags": [
+          "Admin Users"
+        ],
+        "summary": "Обновить роли пользователя",
+        "description": "Полностью заменяет набор ролей пользователя на указанный в запросе.",
+        "operationId": "updateRoles",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRolesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Успешно"
+          }
+        }
+      }
+    },
+    "/api/user/cards/{cardId}/request-block": {
+      "post": {
+        "tags": [
+          "User Cards"
+        ],
+        "summary": "Запросить блокировку карты",
+        "operationId": "requestBlock",
+        "parameters": [
+          {
+            "name": "cardId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Успешно"
+          }
+        }
+      }
+    },
+    "/api/user/cards/transfer": {
+      "post": {
+        "tags": [
+          "User Cards"
+        ],
+        "summary": "Перевод между картами пользователя",
+        "operationId": "transferBetweenCards",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransferRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Успешно"
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Вход в систему",
+        "description": "Возвращает JWT токен",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtAuthenticationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/users/{userId}/roles/remove": {
+      "post": {
+        "tags": [
+          "Admin Users"
+        ],
+        "summary": "Удалить роль у пользователя",
+        "description": "Удаляет указанную роль у пользователя.",
+        "operationId": "removeRole",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Успешно"
+          }
+        }
+      }
+    },
+    "/api/admin/users/{userId}/roles/add": {
+      "post": {
+        "tags": [
+          "Admin Users"
+        ],
+        "summary": "Добавить роль пользователю",
+        "description": "Добавляет указанную роль пользователю.",
+        "operationId": "addRole",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Успешно"
+          }
+        }
+      }
+    },
+    "/api/admin/users/create": {
+      "post": {
+        "tags": [
+          "Admin Users"
+        ],
+        "summary": "Создать пользователя",
+        "description": "Администратор создаёт нового пользователя с указанными ролями.",
+        "operationId": "createUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Успешно",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cards/{id}/activate": {
+      "post": {
+        "tags": [
+          "Admin Cards"
+        ],
+        "summary": "Активировать карту",
+        "description": "Администратор активирует карту по ID карты.",
+        "operationId": "activateCard",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Успешно"
+          }
+        }
+      }
+    },
+    "/api/admin/cards/{cardId}/block": {
+      "post": {
+        "tags": [
+          "Admin Cards"
+        ],
+        "summary": "Заблокировать карту",
+        "description": "Администратор блокирует карту по ID карты.",
+        "operationId": "blockCard",
+        "parameters": [
+          {
+            "name": "cardId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Успешно"
+          }
+        }
+      }
+    },
+    "/api/admin/cards/create": {
+      "post": {
+        "tags": [
+          "Admin Cards"
+        ],
+        "summary": "Создать карту для пользователя",
+        "operationId": "createCard",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCardRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Успешно",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/transactions/{cardId}/get": {
+      "get": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Получить транзакции по карте",
+        "description": "Возвращает как входящие, так и исходящие транзакции",
+        "operationId": "getTransactions",
+        "parameters": [
+          {
+            "name": "cardId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TransactionResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/cards/{cardId}/get-decrypted": {
+      "get": {
+        "tags": [
+          "User Cards"
+        ],
+        "summary": "Получить расшифрованную карту по её ID",
+        "operationId": "getDecryptedUserCard",
+        "parameters": [
+          {
+            "name": "cardId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/cards/{cardId}/balance": {
+      "get": {
+        "tags": [
+          "User Cards"
+        ],
+        "summary": "Получить баланс карты",
+        "operationId": "getBalance",
+        "parameters": [
+          {
+            "name": "cardId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/cards/get": {
+      "get": {
+        "tags": [
+          "User Cards"
+        ],
+        "summary": "Получить замаскированные карты пользователя",
+        "operationId": "getUserCards",
+        "parameters": [
+          {
+            "name": "arg0",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
+          },
+          {
+            "name": "arg1",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/CardFilterRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CardResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/cards/get-decrypted": {
+      "get": {
+        "tags": [
+          "User Cards"
+        ],
+        "summary": "Получить расшифрованные карты пользователя",
+        "operationId": "getDecryptedUserCards",
+        "parameters": [
+          {
+            "name": "arg0",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CardResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/users/get-all": {
+      "get": {
+        "tags": [
+          "Admin Users"
+        ],
+        "summary": "Получить всех пользователей",
+        "description": "Возвращает полный список зарегистрированных пользователей.",
+        "operationId": "getAllUsers",
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cards/get-all": {
+      "get": {
+        "tags": [
+          "Admin Cards"
+        ],
+        "summary": "Получить все банковские карты в системе",
+        "description": "Возвращает полный список всех банковских карт в замаскированном виде.",
+        "operationId": "getAllCards",
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CardResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/users/{id}/delete": {
+      "delete": {
+        "tags": [
+          "Admin Users"
+        ],
+        "summary": "Удалить пользователя",
+        "description": "Удаляет пользователя по его ID.",
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Успешно"
+          }
+        }
+      }
+    },
+    "/api/admin/cards/{cardId}/delete": {
+      "delete": {
+        "tags": [
+          "Admin Cards"
+        ],
+        "summary": "Удалить карту",
+        "description": "Удаляет карту из системы по ID карты.",
+        "operationId": "deleteCard",
+        "parameters": [
+          {
+            "name": "cardId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Успешно"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UpdateUserRolesRequest": {
+        "required": [
+          "roles"
+        ],
+        "type": "object",
+        "properties": {
+          "roles": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "TransferRequest": {
+        "required": [
+          "amount",
+          "fromCardId",
+          "toCardId"
+        ],
+        "type": "object",
+        "properties": {
+          "fromCardId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "toCardId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "amount": {
+            "minimum": 0.01,
+            "exclusiveMinimum": false,
+            "type": "number"
+          }
+        }
+      },
+      "LoginRequest": {
+        "required": [
+          "password",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "JwtAuthenticationResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateUserRequest": {
+        "required": [
+          "email",
+          "password",
+          "roles",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "roles": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "roles": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CreateCardRequest": {
+        "required": [
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "balance": {
+            "type": "number"
+          },
+          "expiresInYears": {
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CardResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "ownerId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "maskedNumber": {
+            "type": "string"
+          },
+          "decryptedNumber": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "BLOCKED",
+              "EXPIRED",
+              "PENDING_BLOCK"
+            ]
+          },
+          "balance": {
+            "type": "number"
+          },
+          "expiry": {
+            "type": "string",
+            "format": "date"
+          },
+          "currency": {
+            "type": "string"
+          }
+        }
+      },
+      "TransactionResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "fromCardId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "toCardId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Pageable": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CardFilterRequest": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "BLOCKED",
+              "EXPIRED",
+              "PENDING_BLOCK"
+            ]
+          },
+          "minBalance": {
+            "type": "number"
+          },
+          "maxBalance": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

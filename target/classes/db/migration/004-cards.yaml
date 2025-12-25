@@ -1,0 +1,77 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-cards
+      author: Timur Aslitdinov
+      changes:
+        - createTable:
+            tableName: cards
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: cards_pkey
+              - column:
+                  name: encrypted_number
+                  type: VARCHAR(1024)
+                  remarks: "AES-GCM encrypted PAN (store ciphertext+nonce+tag)"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: pan_last4
+                  type: CHAR(4)
+                  remarks: "Последние 4 цифры PAN — можно хранить в открытом виде"
+              - column:
+                  name: owner_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expiry
+                  type: DATE
+                  remarks: "Дата окончания действия карты (год-месяц-день) — хранится как первое число месяца"
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  defaultValue: ACTIVE
+                  remarks: "ACTIVE, BLOCKED, EXPIRED, PENDING_BLOCK"
+              - column:
+                  name: balance
+                  type: NUMERIC(19,2)
+                  defaultValueNumeric: 0.00
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency
+                  type: VARCHAR(3)
+                  defaultValue: "USD"
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: aes_key
+                  type: VARCHAR(255)
+                  remarks: "AES-ключ для шифрования карты (Base64)"
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: cards
+            baseColumnNames: owner_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_cards_owner
+            onDelete: RESTRICT
+        - createIndex:
+            tableName: cards
+            indexName: cards_owner_idx
+            columns:
+              - column:
+                  name: owner_id
+        - createIndex:
+            tableName: cards
+            indexName: cards_pan_last4_idx
+            columns:
+              - column:
+                  name: pan_last4

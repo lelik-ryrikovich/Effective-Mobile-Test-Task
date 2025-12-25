@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - include:
+      file: db/migration/001-roles.yaml
+  - include:
+      file: db/migration/002-users.yaml
+  - include:
+      file: db/migration/003-user-roles.yaml
+  - include:
+      file: db/migration/004-cards.yaml
+  - include:
+      file: db/migration/005-transactions.yaml
+  - include:
+      file: db/migration/006-initial-data.yaml
