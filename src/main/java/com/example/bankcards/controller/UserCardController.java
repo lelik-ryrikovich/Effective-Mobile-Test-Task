@@ -2,6 +2,7 @@ package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.CardFilterRequest;
 import com.example.bankcards.dto.CardResponse;
+import com.example.bankcards.dto.PagedResponse;
 import com.example.bankcards.dto.TransferRequest;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.service.UserCardService;
@@ -10,7 +11,6 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.security.Principal;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user/cards")
@@ -33,21 +32,31 @@ public class UserCardController {
 
     private final UserCardService userCardService;
 
-    @Operation(summary = "Получить замаскированные карты пользователя")
+    @GetMapping("/get")
+    @Operation(summary = "Получить замаскированные карты пользователя с пагинацией")
     @ApiResponse(
             responseCode = "200",
             description = "Успешно",
-            content = @Content(
-                    array = @ArraySchema(
-                            schema = @Schema(implementation = CardResponse.class)
-                    )
-            )
+            content = @Content(schema = @Schema(implementation = PagedResponse.class))
     )
-    @GetMapping("/get")
-    public ResponseEntity<Page<CardResponse>> getUserCards(Pageable pageable, CardFilterRequest filter, Principal principal) {
-        Page<Card> cards = userCardService.getUserCards(principal.getName(),filter, pageable);
-        Page<CardResponse> response = cards.map(this::toResponse);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<PagedResponse<CardResponse>> getUserCards(
+            Pageable pageable,
+            CardFilterRequest filter,
+            Principal principal) {
+
+        Page<Card> cardsPage = userCardService.getUserCards(principal.getName(), filter, pageable);
+        Page<CardResponse> responsePage = cardsPage.map(this::toResponse);
+
+        PagedResponse<CardResponse> pagedResponse = PagedResponse.<CardResponse>builder()
+                .content(responsePage.getContent())
+                .pageNumber(responsePage.getNumber())
+                .pageSize(responsePage.getSize())
+                .totalElements(responsePage.getTotalElements())
+                .totalPages(responsePage.getTotalPages())
+                .last(responsePage.isLast())
+                .build();
+
+        return ResponseEntity.ok(pagedResponse);
     }
 
     @Operation(summary = "Получить расшифрованные карты пользователя")
@@ -56,15 +65,25 @@ public class UserCardController {
             description = "Успешно",
             content = @Content(
                     array = @ArraySchema(
-                            schema = @Schema(implementation = CardResponse.class)
+                            schema = @Schema(implementation = PagedResponse.class)
                     )
             )
     )
     @GetMapping("/get-decrypted")
-    public ResponseEntity<Page<CardResponse>> getDecryptedUserCards(Pageable pageable, Principal principal) {
-        Page<Card> cards = userCardService.getDecryptedPanUserCards(principal.getName(), pageable);
-        Page<CardResponse> response = cards.map(this::toResponse);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<PagedResponse<CardResponse>> getDecryptedUserCards(Pageable pageable, Principal principal) {
+        Page<Card> cardsPage = userCardService.getDecryptedPanUserCards(principal.getName(), pageable);
+        Page<CardResponse> responsePage = cardsPage.map(this::toResponse);
+
+        PagedResponse<CardResponse> pagedResponse = PagedResponse.<CardResponse>builder()
+                .content(responsePage.getContent())
+                .pageNumber(responsePage.getNumber())
+                .pageSize(responsePage.getSize())
+                .totalElements(responsePage.getTotalElements())
+                .totalPages(responsePage.getTotalPages())
+                .last(responsePage.isLast())
+                .build();
+
+        return ResponseEntity.ok(pagedResponse);
     }
 
     @Operation(summary = "Получить расшифрованную карту по её ID")
